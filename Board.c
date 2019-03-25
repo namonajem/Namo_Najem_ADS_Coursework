@@ -30,7 +30,6 @@ void save(char* board);
 void emptyList(struct node** list);
 
 
-
 int main(void)
 {
   //initializing our linked list and our board
@@ -71,8 +70,26 @@ int main(void)
     //input is taken
     scanf("%s",c);
 
+
+    // if non of the flags above are triggered this verifies input for move to be made
+    if (isdigit(c[0]) && c[1] == NULL) {
+
+
+      int j = atoi(c); //converting input into int
+      if (board[j-1] != 'X' && board[j-1] != 'O') { //checking if move has already been made
+        //if so move gets appended and flag gets switched
+        append(&list,j);
+        playeroneflag = !playeroneflag;
+        print_board(list, &board);
+      }
+      //if move isnt valid we prompt
+      else {printf("Please choose an unselected square\n\n");
+      print_board(list, &board);}
+    }
+
+
     //save flag
-    if (strcmp(c,"save") == 0) {
+    else if (strcmp(c,"save") == 0) {
       save(board);
 
       print_board(list, &board);
@@ -121,19 +138,6 @@ int main(void)
 
 
 
-    // if non of the flags above are triggered this verifies input for move to be made
-    else if (isdigit(c[0]) && c[1] == NULL) {
-      int j = atoi(c); //converting input into int
-      if (board[j-1] != 'X' && board[j-1] != 'O') { //checking if move has already been made
-        //if so move gets appended and flag gets switched
-        append(&list,j);
-        playeroneflag = !playeroneflag;
-        print_board(list, &board);
-      }
-      //if move isnt valid we prompt
-      else {printf("Please choose an unselected square\n\n");
-      print_board(list, &board);}
-    }
 
 
     //if no flag is triggered thus far input is incorrect
@@ -188,6 +192,7 @@ void save(char* board)
   FILE *fileID = fopen(file,"w");
   fprintf(fileID,"%s\n",board);
   fclose(fileID);
+  printf("Game successfully saved!\n");
 }
 
 
@@ -209,6 +214,7 @@ void load(char** board)
   fgets(file, 10, fileID);
   strcpy(*board,file);
   fclose(fileID);
+  printf("Game successfully Loaded!\n" );
 
 }
 
