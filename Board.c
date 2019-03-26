@@ -194,6 +194,7 @@ void save(struct node * current)
   printf("Enter save file name including extension ie:save1.txt\n");
   scanf("%s",file);
   FILE *fileID = fopen(file,"w");
+  fprintf(fileID,"%s\n",board);
   fclose(fileID);
   printf("Game successfully saved!\n" );
 }
