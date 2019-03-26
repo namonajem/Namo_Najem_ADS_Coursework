@@ -25,8 +25,8 @@ typedef struct node
 void append(struct node **, int);
 void print_board(struct node *, char ** board);
 bool gamewon(char* board);
-void load(char** board);
-void save(char* board);
+void load(struct node **);
+void save(struct node *);
 void emptyList(struct node** list);
 
 
@@ -90,7 +90,7 @@ int main(void)
 
     //save flag
     else if (strcmp(c,"save") == 0) {
-      save(board);
+      save(list);
 
       print_board(list, &board);
     }
@@ -99,15 +99,10 @@ int main(void)
 
     //load flag
     else if (strcmp(c,"load") == 0) {
-      load(&board);
       emptyList(&list);
+      load(&list);
+      strcpy(board, "123456789"); //reseting the board, print_board populates it again with all valid turns
 
-      //after new board is loaded and the linked list is emptied, this repopulates our list with the turns loaded from the save file
-      for (size_t i = 0; i < 9; i++) {
-        if (board[i] == 'X' || board[i] == 'O') {
-          append(&list, i+1);
-        }
-      }
       print_board(list, &board);
     }
 
@@ -184,24 +179,31 @@ void append(struct node ** list, int squares)
 }
 
 //save function for our board, only saves what moves are made to a text file, no order
-void save(char* board)
+void save(struct node * current)
 {
+  int i = 0;
+  char board[10]="";
+  current = current->next;
+  while (current != NULL) {
+    char move = current->data + '0';
+    board[i] = move;
+    current = current->next;
+    i++;
+  }
   char* file = malloc(10);
   printf("Enter save file name including extension ie:save1.txt\n");
   scanf("%s",file);
   FILE *fileID = fopen(file,"w");
-  fprintf(fileID,"%s\n",board);
   fclose(fileID);
-  printf("Game successfully saved!\n");
+  printf("Game successfully saved!\n" );
 }
 
 
 //load function for our board, loads a string from a text file and sets the game board to equal it,
 // the rest of the load happens in the main method because said moves must be appended to the linked list aswell
-void load(char** board)
+void load(struct node **list)
 {
 
-  strcpy(*board, "123456789");
   char* file = malloc(10);
   char* txt = malloc(10);
   printf("Enter save state name including extension ie:save1.txt\n");
@@ -212,9 +214,18 @@ void load(char** board)
     return;
   }
   fgets(file, 10, fileID);
-  strcpy(*board,file);
+
+  for (int i = 0; i < strlen(file)-1 ; i++) {
+      int j = (file[i] - '0');
+      printf("%d\n",j);
+      append(&*list,j);
+
+  }
+
   fclose(fileID);
-  printf("Game successfully Loaded!\n" );
+  free(file);
+  free(txt);
+  printf("Game successfully Loaded!\n");
 
 }
 
